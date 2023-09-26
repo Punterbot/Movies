@@ -1,0 +1,100 @@
+<html>
+<head>
+    <title>Movies</title>
+    <style>
+        td,th{
+            text-align: center !important;
+        }
+        .hide{
+            display: none;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+</head>
+<body>
+    <h1>Movies</h1>
+        <select name="genre" id="filter" multiple>
+            <option value="">All Genres</option>
+            {% for genre in all_genre %}
+            <option value="{{genre}}">{{genre}}</option>
+            {% endfor %}
+            <!-- Add options for genres here -->
+        </select>
+    </form>
+    <table id="movie_table">
+        <thead>
+            <tr>
+                <th>poster</th>
+                <th>Title</th>
+                <th>Year</th>
+                <th>released</th>
+                <th>runtime</th>
+                <th class="hide">genre</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for all_movie in movies_list %}
+            {% for movie in all_movie.movies %}
+                <tr>
+                    <td><img src="{{ movie.poster}}" alt="{{ movie.title }}" width="50px" height="50px"></td>
+                    <td>{{ movie.title }}</td>
+                    <td>{{ movie.year }}</td>
+                    <td>{{ movie.released }}</td>
+                    <td>{{ movie.runtime }} minutes</td>
+                    <td class="hide">
+                        {% for genre in movie.genre %}
+                            {{ genre }}
+                            {% if not forloop.last %}, {% endif %}
+                        {% endfor %}</td>
+                </tr>
+            {% endfor %}    
+        {% endfor %}
+        </tbody>
+    </table>
+<script>
+    $(document).ready( function () {
+        var table=$('#movie_table').DataTable({
+            "language": {
+                "search": "Search Title:"
+            },
+            responsive: true,
+            columnDefs: [
+                { "searchable": false, "targets": 0 },
+                { "searchable": true, "targets": 1 },
+                { "searchable": false, "targets": 2 },
+                { "searchable": false, "targets": 3 },
+                { "searchable": false, "targets": 4 },
+                { "searchable": true, "targets": 5 }
+            ]
+        });
+        $("#filter").on('change', function() {
+            $.fn.dataTableExt.afnFiltering.length=0;
+            var selected=$(this).val();
+            for(var i=0;i<selected.length;i++){
+                filtertable(selected[i]);
+            }
+            table.draw();
+        }); 
+    } );
+    var filtertable = function(individualval){
+        $.fn.dataTable.ext.search.push(
+            function( settings, data, dataIndex ) {
+                /*var selectedValue = $('#filter').val();*/
+                
+                    if (data[5].includes(individualval)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                
+            }
+        );
+    }
+</script>        
+</body>
+</html>

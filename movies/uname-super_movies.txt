@@ -1,0 +1,3 @@
+uname:-super_movies
+email:-movies@email.com
+Pword:Admin@123
